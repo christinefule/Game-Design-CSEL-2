@@ -35,7 +35,7 @@ walkUp = [pygame.image.load('img assets/U1.png'),pygame.image.load('img assets/U
              pygame.image.load('img assets/U15.png'),pygame.image.load('img assets/U16.png'),pygame.image.load('img assets/U17.png'),pygame.image.load('img assets/U18.png'),pygame.image.load('img assets/U19.png'),pygame.image.load('img assets/U20.png'),pygame.image.load('img assets/U21.png')]
 
 
-bg = pygame.image.load('img assets/bg.png')
+bg = pygame.image.load('img assets/bg2.png')
 char = pygame.image.load('img assets/stand.png')
 mixer.music.load('img assets/themesong.wav')
 mixer.music.play(-1)
@@ -55,7 +55,7 @@ class player(object):
         self.health = 9 #HEALTH BAR
         self.visible = True #VISIBILITY OF THE HEALTH BAR
         #POSITION OF THE ASSET MAIN CHARACTER
-        self.x = 510
+        self.x = 630
         self.y= 600
         self.hitObject = (self.x + 1, self.y + 1, 35, 53) #PLAYER HITOBJECT (rectangle) 
         
@@ -111,7 +111,7 @@ class player(object):
         self.walk_counter = 0
         font1 = pygame.font.SysFont('Bookman Old Style', 100,True)
         text = font1.render('YOU LOSE!',1, (255,0,0))
-        win.blit(text, (560 - (text.get_width()/2),200))
+        win.blit(text, (560 - (text.get_width()/2),150))
         pygame.display.update()
         i = 0
         while i < 100:
@@ -173,7 +173,7 @@ class enemy(object):
         self.path = [x,end] #WHERE THE ENEMY STARTS AND FINISH 
         self.hitObject = (self.x + 1, self.y + 1, 68, 38) #ENEMY HIT OBJECT (rectangle) 
         self.health = 9 #HEALTH BAR
-        self.visible = True #VISIBILITY OF THE HEALTH BAR
+        self.visible = True #VISIBILITY OF THE enemy
         
         self.walk_count = 0 
         self.speed = 3
@@ -194,7 +194,7 @@ class enemy(object):
             pygame.draw.rect(win, (255,0,0),(self.hitObject[0], self.hitObject[1] -20,50,10))
             pygame.draw.rect(win, (0,128,0),(self.hitObject[0], self.hitObject[1] -20,60 - (6 * (10 - self.health)),10))
             self.hitObject = (self.x + 1, self.y + 1, 65, 38) #ADDED CODE FOR HITOBJECT WHICH IS THE RECTANGLE OBJECT
-            #pygame.draw.rect(win, (0,0,0), self.hitObject,2) # TO DRAW THE HITOBJECT AROUND THE ENEMY
+            #pygame.draw.rect(win, (255,0,0), self.hitObject,2) # TO DRAW THE HITOBJECT AROUND THE ENEMY
         
         
     def move(self): #ATRRIBUTE OF THE ENEMY
@@ -212,16 +212,14 @@ class enemy(object):
                  self.speed = self.speed * -1
                  self.x += self.speed
                  self.walk_count = 0
-
                
      #METHOD TO HIT THE ENEMY
     def hit(self): #DISPLAY WHEN THE ENEMY IS HIT BY THE BULLET
         if self.health > 0:
             self.health -= 1
         else:
-            pygame.image.load('img assets/bullet.png')
             self.visible = False
-            print("HIT!")                
+            print("CAUGHT!")                
 
 #NEW CLASS FOR ENEMY2
 class enemy2(object):
@@ -285,9 +283,8 @@ class enemy2(object):
             self.health -= 1
         else:
             self.visible = False
-            print("HIT!")              
-        
-        
+            print("CAUGHT!")              
+    
 #NEW CLASS FOR ENEMY3
 class enemy3(object):
     walkDown = [pygame.image.load('img assets/DE1.png'),pygame.image.load('img assets/DE2.png'),pygame.image.load('img assets/DE3.png'),pygame.image.load('img assets/DE4.png'),pygame.image.load('img assets/DE5.png'),
@@ -350,8 +347,9 @@ class enemy3(object):
             self.health -= 1
         else:
             self.visible = False
-            print("HIT!")              
-        
+            print("CAUGHT!")       
+            
+                
 def redrawWindowGame():
     win.blit(bg, (0,0))#TO DRAW THE BG IMAGE AT 0,0
     text = font.render('Score: ' + str(score), 1, (0,0,0)) #RENDERING SOME TEXT AND DISPLAY ON SCREEN
@@ -366,15 +364,25 @@ def redrawWindowGame():
     
     pygame.display.update()#UPDATE WINDOW
 clock = pygame.time.Clock()
+#YOU CAN CHANGE THE COLOR HERE OF THE WIN 
+def drawWinGame():
+    win.blit(bg, (0,0))
+    play.draw(win)
+    font1 = pygame.font.SysFont('Bookman Old Style', 100,True)
+    text = font1.render('YOU WIN!',1, (0,255,0))
+    win.blit(text, (560 - (text.get_width()/2),200))
+    for bullet in bullets:
+        bullet.draw(win)
+    pygame.display.update()
 #END OF THE OUTSIDE LOOP
 
 #main loop
 #DISPLAY WINDOW
 #START OF THE MAIN LOOP
 play = player(200,410,100,100)#NSTANCE OF THE MAIN PLAYER
-monster = enemy (200,210,100,100,400) #INSTANCE OF THE ENEMY
-monster2 = enemy2 (600,500,200,200,700)#INSTANCE OF THE ENEMY
-monster3 = enemy3 (200,360,200,200,300)#INSTANCE OF THE ENEMY
+monster = enemy (230,230,100,100,400) #INSTANCE OF THE ENEMY
+monster2 = enemy2 (600,340,200,200,700)#INSTANCE OF THE ENEMY
+monster3 = enemy3 (200,520,200,200,300)#INSTANCE OF THE ENEMY
 bullets = []
 shootLoop = 0
 run = True
@@ -383,25 +391,7 @@ run = True
 font = pygame.font.SysFont('Bookman Old Style', 30, True,True)#TEXT FONT, SIZE, BOLD, ITALIC  
 
 while run:#RESPONSIBLE FOR THE KEYS FUNCTION AND TO DETERMINE THE FRAMERATE
-    clock.tick(27)
-    if monster.visible ==True:
-        if play.hitObject[1] - play.hitObject[1] < monster.hitObject[1] + monster.hitObject[3] and play.hitObject[1] + play.hitObject[3] > monster.hitObject[1]:
-            #TO CHECK Y COORDINATE
-                if play.hitObject[0] + play.hitObject[2] > monster.hitObject[0] and play.hitObject[0] < monster.hitObject[0] + monster.hitObject[2]:
-                    play.hit()#HIT FUNCTION CALL
-                    score -= 2 #SCORE DEDUCTION
-    if monster2.visible ==True:
-        if play.hitObject[1] - play.hitObject[1] < monster2.hitObject2[1] + monster2.hitObject2[3] and play.hitObject[1] + play.hitObject[3] > monster2.hitObject2[1]:
-            #TO CHECK Y COORDINATE
-                if play.hitObject[0] + play.hitObject[2] > monster2.hitObject2[0] and play.hitObject[0] < monster2.hitObject2[0] + monster2.hitObject2[2]:
-                    play.hit()#HIT FUNCTION CALL
-                    score -= 2 #SCORE DEDUCTION
-    if monster3.visible ==True:
-        if play.hitObject[1] - play.hitObject[1] < monster3.hitObject3[1] + monster3.hitObject3[3] and play.hitObject[1] + play.hitObject[3] > monster3.hitObject3[1]:
-            #TO CHECK Y COORDINATE
-                if play.hitObject[0] + play.hitObject[2] > monster3.hitObject3[0] and play.hitObject[0] < monster3.hitObject3[0] + monster3.hitObject3[2]:
-                    play.hit()#HIT FUNCTION CALL
-                    score -= 2 #SCORE DEDUCTION          
+    clock.tick(27)         
     #NO. OF BULLET RELEASE
     if shootLoop > 0:
         shootLoop += 1
@@ -411,40 +401,38 @@ while run:#RESPONSIBLE FOR THE KEYS FUNCTION AND TO DETERMINE THE FRAMERATE
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-     
+    
      #add the projectile class in main loop = player with gun
     for bullet in bullets:
-        #TO CHECK X COORDINATE
-        if bullet.y - bullet.radius < monster.hitObject[1] + monster.hitObject[3] and bullet.y + bullet.radius > monster.hitObject[1]:
-        #TO CHECK Y COORDINATE
-            if bullet.x + bullet.radius > monster.hitObject[0] and bullet.x - bullet.radius < monster.hitObject[0] + monster.hitObject[2]:
-                bulletSound.play()
-                monster.hit()#HIT FUNCTION CALL
-                score += 1 #SCORING
-                bullets.pop(bullets.index(bullet))#TO USE BULLET LIST
-    for bullet2 in bullets:
-        #TO CHECK X COORDINATE
-        if bullet.y - bullet.radius < monster2.hitObject2[1] + monster2.hitObject2[3] and bullet.y + bullet.radius > monster2.hitObject2[1]:
-        #TO CHECK Y COORDINATE
-            if bullet.x + bullet.radius > monster2.hitObject2[0] and bullet.x - bullet.radius < monster2.hitObject2[0] + monster2.hitObject2[2]:
-                bulletSound.play()
-                monster2.hit()#HIT FUNCTION CALL
-                score += 1 #SCORING 
-                bullets.pop(bullets.index(bullet))#TO USE BULLET LIST    
-    for bullet3 in bullets:
-        #TO CHECK X COORDINATE
-        if bullet.y - bullet.radius < monster3.hitObject3[1] + monster3.hitObject3[3] and bullet.y + bullet.radius > monster3.hitObject3[1]:
-        #TO CHECK Y COORDINATE
-            if bullet.x + bullet.radius > monster3.hitObject3[0] and bullet.x - bullet.radius < monster3.hitObject3[0] + monster3.hitObject3[2]:
-                bulletSound.play()
-                monster3.hit()#HIT FUNCTION CALL
-                score += 1 #SCORING
-                bullets.pop(bullets.index(bullet))#TO USE BULLET LIST    
-        
-        if   bullet2.x < 1100 and bullet.x > 0:
-             bullet2.x += bullet.speed 
-        elif bullet3.x < 1100 and bullet.x > 0:
-             bullet3.x += bullet.speed 
+        if monster.visible:
+            #TO CHECK X COORDINATE
+            if bullet.y - bullet.radius < monster.hitObject[1] + monster.hitObject[3] and bullet.y + bullet.radius > monster.hitObject[1]:
+            #TO CHECK Y COORDINATE
+                if bullet.x + bullet.radius > monster.hitObject[0] and bullet.x - bullet.radius < monster.hitObject[0] + monster.hitObject[2]:
+                    bulletSound.play()
+                    monster.hit()#HIT FUNCTION CALL
+                    score += 1 #SCORING
+                    bullets.pop(bullets.index(bullet))#TO USE BULLET LIST
+        if monster2.visible:
+            if bullet.y - bullet.radius < monster2.hitObject2[1] + monster2.hitObject2[3] and bullet.y + bullet.radius > monster2.hitObject2[1]:
+            #TO CHECK Y COORDINATE
+                if bullet.x + bullet.radius > monster2.hitObject2[0] and bullet.x - bullet.radius < monster2.hitObject2[0] + monster2.hitObject2[2]:
+                    bulletSound.play()
+                    monster2.hit()#HIT FUNCTION CALL
+                    score += 1 #SCORING 
+                    bullets.pop(bullets.index(bullet))#TO USE BULLET LIST    
+        if monster3.visible:
+            #TO CHECK X COORDINATE
+            if bullet.y - bullet.radius < monster3.hitObject3[1] + monster3.hitObject3[3] and bullet.y + bullet.radius > monster3.hitObject3[1]:
+            #TO CHECK Y COORDINATE
+                if bullet.x + bullet.radius > monster3.hitObject3[0] and bullet.x - bullet.radius < monster3.hitObject3[0] + monster3.hitObject3[2]:
+                    bulletSound.play()
+                    monster3.hit()#HIT FUNCTION CALL
+                    score += 1 #SCORING
+                    bullets.pop(bullets.index(bullet))#TO USE BULLET LIST    
+        #checks if the bullet is still in the screen
+        if   bullet.x < 1100 and bullet.x > 0:
+            bullet.x += bullet.speed 
         else:
             bullets.pop(bullets.index(bullet))
                                 
@@ -520,7 +508,45 @@ while run:#RESPONSIBLE FOR THE KEYS FUNCTION AND TO DETERMINE THE FRAMERATE
         else:
              play.jumpCount = 5
              play.isJump = False  
-    redrawWindowGame()#CALLOUT THE FUNCTION 
+    
+    #CHECKS IF THE PLAYER COLLIDED WITH THE ENEMY
+    if(play.hitObject[0]>=monster.hitObject[0] and play.hitObject[0]<=monster.hitObject[0]+monster.hitObject[2]):#checks if the box's left is in monster border 
+        if(play.hitObject[1]>=monster.hitObject[1] and play.hitObject[1]<=monster.hitObject[1]+monster.hitObject[3]):
+            play.hit()
+        elif(play.hitObject[1]+play.hitObject[3]>=monster.hitObject[1] and play.hitObject[1]+play.hitObject[3]<=monster.hitObject[1]+monster.hitObject[3]):
+            play.hit()
+    elif(play.hitObject[0]+play.hitObject[2]>=monster.hitObject[0] and play.hitObject[0]+play.hitObject[2]<=monster.hitObject[0]+monster.hitObject[2]):
+        if(play.hitObject[1]>=monster.hitObject[1] and play.hitObject[1]<=monster.hitObject[1]+monster.hitObject[3]):
+            play.hit()
+        elif(play.hitObject[1]+play.hitObject[3]>=monster.hitObject[1] and play.hitObject[1]+play.hitObject[3]<=monster.hitObject[1]+monster.hitObject[3]):
+            play.hit()
+
+    if(play.hitObject[0]>=monster2.hitObject2[0] and play.hitObject[0]<=monster2.hitObject2[0]+monster2.hitObject2[2]):#checks if the box's left is in monster2 border 
+        if(play.hitObject[1]>=monster2.hitObject2[1] and play.hitObject[1]<=monster2.hitObject2[1]+monster2.hitObject2[3]):
+            play.hit()
+        elif(play.hitObject[1]+play.hitObject[3]>=monster2.hitObject2[1] and play.hitObject[1]+play.hitObject[3]<=monster2.hitObject2[1]+monster2.hitObject2[3]):
+            play.hit()
+    elif(play.hitObject[0]+play.hitObject[2]>=monster2.hitObject2[0] and play.hitObject[0]+play.hitObject[2]<=monster2.hitObject2[0]+monster2.hitObject2[2]):
+        if(play.hitObject[1]>=monster2.hitObject2[1] and play.hitObject[1]<=monster2.hitObject2[1]+monster2.hitObject2[3]):
+            play.hit()
+        elif(play.hitObject[1]+play.hitObject[3]>=monster2.hitObject2[1] and play.hitObject[1]+play.hitObject[3]<=monster2.hitObject2[1]+monster2.hitObject2[3]):
+            play.hit()
+
+    if(play.hitObject[0]>=monster3.hitObject3[0] and play.hitObject[0]<=monster3.hitObject3[0]+monster3.hitObject3[2]):#checks if the box's left is in monster3 border 
+        if(play.hitObject[1]>=monster3.hitObject3[1] and play.hitObject[1]<=monster3.hitObject3[1]+monster3.hitObject3[3]):
+            play.hit()
+        elif(play.hitObject[1]+play.hitObject[3]>=monster3.hitObject3[1] and play.hitObject[1]+play.hitObject[3]<=monster3.hitObject3[1]+monster3.hitObject3[3]):
+            play.hit()
+    elif(play.hitObject[0]+play.hitObject[2]>=monster3.hitObject3[0] and play.hitObject[0]+play.hitObject[2]<=monster3.hitObject3[0]+monster3.hitObject3[2]):
+        if(play.hitObject[1]>=monster3.hitObject3[1] and play.hitObject[1]<=monster3.hitObject3[1]+monster3.hitObject3[3]):
+            play.hit()
+        elif(play.hitObject[1]+play.hitObject[3]>=monster3.hitObject3[1] and play.hitObject[1]+play.hitObject[3]<=monster3.hitObject3[1]+monster3.hitObject3[3]):
+            play.hit()
+
+    if score >= 30:
+        drawWinGame()
+    else:
+        redrawWindowGame()#CALLOUT THE FUNCTION 
     
 pygame.quit()
 #END GAME
